@@ -1,0 +1,27 @@
+{
+  "name": "testatlas",
+  "version": "1.0.0",
+  "description": "test atlas crud",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "Fabio",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-validation": "^4.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "mailgun-js": "^0.22.0",
+    "mongoose": "^6.5.2",
+    "nodemon": "^2.0.19",
+    "randomatic": "^3.1.1",
+    "twilio": "^3.80.1"
+  }
+}
