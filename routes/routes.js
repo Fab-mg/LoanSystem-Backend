@@ -44,7 +44,11 @@ const routes = (router = Router) => {
 
     //CLIENT //BANQUE //PRET
     router.get('/client/:id/pretClient', clientFonctions.getClientPret)
-    router.get('/banque/:id/pretBanque', bankFonctions.getBanquePret)
+    router.get('/banque/:id/pretBanque', bankFonctions.getBanquePret);
+
+    router.post('/pret/getZavatra',pretFonctions.getZavatra)
+
+
 
 }
 

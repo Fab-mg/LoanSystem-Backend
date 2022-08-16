@@ -25,7 +25,8 @@ const createPret = async (req, res) => {
 
                 //Create pret in Banque.pret
                 const banqueId = pret.Banque
-                const banque = await Banque.findById(clientId)
+                console.log(banqueId)
+                const banque = await Banque.findById(banqueId)
                 console.log(banque)
                 await banque.updateOne({
                     $push: { pret: pret }
@@ -148,6 +149,28 @@ const deletePret = async (req, res) => {
     }
 }
 
+const getZavatra = async(req,res)=>{
+    const test = req.body.test;
+    const date = new Date(test);
+    const dateCopy = new Date(date.getTime());
+
+    dateCopy.setDate(dateCopy.getDate() + 7);
+
+// 👇️ Thu Apr 28 2022
+console.log(dateCopy);
+
+// 👇️ Thu Apr 21 2022 (didn't change original)
+console.log(date);
+
+    const minDate = new Date(date)
+    const maxDate = new Date(dateCopy)
+
+    // const pret = await Pret.find({
+    //     "datePret": { "$gte" : minDate, "$lt" : maxDate }
+    // })
+    // console.log(" Pret" + pret + " date " + date)
+}
+
 const versement = async (req,res) => {
     const id = req.params.id    
     const versement = req.body.versement
@@ -160,12 +183,15 @@ const versement = async (req,res) => {
     res.send(await Pret.findById(id))
 }
 
+
+
 module.exports = {
     createPret: createPret,
     getPret: getPret,
     viewPret: viewPret,
     updatePret: updatePret,
     deletePret: deletePret,
+    getZavatra:getZavatra,
     versement: versement
 }
 

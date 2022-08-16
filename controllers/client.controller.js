@@ -67,7 +67,8 @@ const updateClient = async (req, res) => {
     const id = req.params.id
     const data = {
         nom: req.body.nom,
-        adresse: req.body.adresse
+        adresse: req.body.adresse,
+        telClient: req.body.telClient
     }
     try {
         const client = await Client.findById(id)

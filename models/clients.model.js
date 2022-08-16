@@ -4,7 +4,7 @@ const Schema = mongoose.Schema(
     {
         nom: {type: String},
         adresse: {type: String},
-        numClient: {type: String},
+        numClient: {type: String, unique: true, dropDups: true},
         telClient: {type: String},
         email: {type: String, unique: true, dropDups: true},
         pret: [{

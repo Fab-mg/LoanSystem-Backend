@@ -3,17 +3,18 @@ const Banque = require('../models/banque.model')
 const createBanque = async (req, res) => {
     const body = req.body
     try {
-        await Banque.create({
+        const create = await Banque.create({
             designation: body.designation,
             taux_pret: body.taux_pret,
             numBanque: body.numBanque
         })
+        console.log(create)
         const banque = await Banque.findOne({designation: body.designation})
         return res.send(banque)
     } catch (error) {
         res.send({
             error,
-            message: "Failed to create client"
+            message: "Failed to create bank"
         })
     }
 }

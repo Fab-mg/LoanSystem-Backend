@@ -5,9 +5,9 @@ const Schema = mongoose.Schema(
         montant: {type: Number},
         datePret: {
             type: Date, 
-            default: Date.now,
+            default: new Date,
         //    min: '2022-08-00',
-            max: Date.now
+            max: new Date
         },
         Banque: {
             type: mongoose.Schema.Types.ObjectId,
