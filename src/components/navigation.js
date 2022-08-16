@@ -1,30 +1,25 @@
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
-import {FormControl} from 'react-bootstrap';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
-import Clients from './clients';
-import Banques from './Banques';
-import Prets from './Prets';
+import {Link} from "react-router-dom";
 
-
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link
-  } from "react-router-dom";
-  
-
-function NavBar() {
+export const NavBar = ()=>{
   return (
-    <Router>
-    <Navbar bg="light" expand="lg">
+    <Navbar bg="light" expand="lg" style={{
+      width:"100%",
+      marginBottom:'50px'
+    }}>
       <Container fluid>
-        <Navbar.Brand href="#">Gestion de pret bancaire</Navbar.Brand>
+        <Navbar.Brand href="#" style={{
+          fontWeight:'700',
+          fontSize:'15px'
+          }}>
+            GESTION DE PRÊT BANCAIRE
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -32,55 +27,45 @@ function NavBar() {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link as={Link} to={"/Client"} >Client</Nav.Link>
-            <Nav.Link as={Link} to={"/Banque"}>Banque</Nav.Link>
-            <Nav.Link as={Link} to={"/Pret"}>Pret</Nav.Link>
-            <NavDropdown title="Action" id="navbarScrollingDropdown">
-              <NavDropdown.Item href="#action3">Ajouter Client</NavDropdown.Item>
+            <Nav.Link style={{
+                width:'150px', 
+                textAlign:'center',
+                fontWeight:'500'
+              }} as={Link} to={"/Client"} >
+                CLIENT
+            </Nav.Link>
+            <Nav.Link style={{
+                width:'150px', 
+                textAlign:'center',
+                fontWeight:'500'
+              }} as={Link} to={"/Banque"}>BANQUE</Nav.Link>
+            <Nav.Link style={{
+                width:'150px', 
+                textAlign:'center',
+                fontWeight:'500'
+              }} as={Link} to={"/Pret"}>PRÊT</Nav.Link>
+            <NavDropdown style={{
+                width:'150px', 
+                textAlign:'center',
+                fontWeight:'500'
+              }} title="ACTION" id="navbarScrollingDropdown">
+              <NavDropdown.Item  >
+                <Nav.Link as={Link} to={"/AddClient"}>AJOUTER CLIENT</Nav.Link>
+              </NavDropdown.Item>
               <NavDropdown.Item href="#action4">
-              Ajouter Banque
+                <Nav.Link as={Link} to={"/AddBanque"}>AJOUTER BANQUE</Nav.Link>
               </NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item href="#action5">
-                Enregistrement de pret
+                <Nav.Link as={Link} to={"/AddPret"}>ENREGISTRER PRÊT</Nav.Link>
               </NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link href="#" disabled>
-              Link
-            </Nav.Link>
           </Nav>
-          <Form className="d-flex">
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2"
-              aria-label="Search"
-            />
-            <Button variant="outline-success">Search</Button>
-          </Form>
         </Navbar.Collapse>
       </Container>
       
     </Navbar>
-    <div>
-
-        <Switch>
-        <Route path="/Client">
-            <div><Clients /></div>
-            
-        </Route>
-        <Route path="/Banque">
-            <div><Banques /></div>
-
-        </Route>
-        <Route path="/Pret">
-            <div><Prets /></div>
-        </Route>
-        </Switch>
-
-        </div>
-    </Router>
   );
 }
 
-export default NavBar;
+

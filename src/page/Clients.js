@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import axios from 'axios'
 import * as ReactBootstrap from 'react-bootstrap'
+import NavBar from './components/navigation';
 
 const Clients = () => {
     const [clients, setClients] = useState({ users: []})
@@ -15,6 +16,7 @@ const Clients = () => {
     }, [setClients])
   return (
     <div>
+        <NavBar></NavBar>
         <ReactBootstrap.Table striped bordered hover>
       <thead>
         <tr>
@@ -24,6 +26,8 @@ const Clients = () => {
           <th>Email</th>
           <th>Telephone</th>
           <th>Numero</th>
+          <th>Action</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +40,8 @@ const Clients = () => {
                 <td>{client.email}</td>
                 <td>{client.telClient}</td>
                 <td>{client.numClient}</td>
+                <td><a>Supprimer</a></td>
+                <td><a>Modifier</a></td>
                 </tr>
             ))
         }        
