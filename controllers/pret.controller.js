@@ -1,6 +1,7 @@
 const Pret = require('../models/pret.model')
 const Client = require('../models/clients.model')
 const Banque = require('../models/banque.model')
+const mongoose = require('mongoose')
 
 
 const createPret = async (req, res) => {
@@ -183,6 +184,24 @@ const versement = async (req,res) => {
     res.send(await Pret.findById(id))
 }
 
+const searchPret = async (req, res) => {
+    const keyword = req.body.keyword
+  const prets = await Pret.find().or([
+      { numPret:  {$regex: keyword, $options: 'i'} }
+    ])  
+
+  if((prets.length != 0)){ return res.send(prets)}
+  try {
+    const newkey = mongoose.Types.ObjectId(keyword.trim())
+    const pretsById = await Pret.findById(newkey)
+    if(pretsById.length != 0){ return res.send(pretsById)}
+    res.send({message: "no Prets found"})
+  } catch (error) {
+    return  res.send({message: "Internal error"})
+  }
+
+  res.send({message: "no Prets found"})
+}
 
 
 module.exports = {
@@ -192,6 +211,7 @@ module.exports = {
     updatePret: updatePret,
     deletePret: deletePret,
     getZavatra:getZavatra,
-    versement: versement
+    versement: versement,
+    searchPret: searchPret
 }
 

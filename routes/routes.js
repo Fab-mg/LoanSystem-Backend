@@ -26,6 +26,7 @@ const routes = (router = Router) => {
     router.get('/client/:id', clientFonctions.viewClient)
     router.put('/client/:id/update', clientFonctions.updateClient)
     router.delete('/client/:id/delete', clientFonctions.deleteClient)
+    router.post('/client/search', clientFonctions.searchClient)
 
     //BANQUE
     router.post('/banque/create', bankFonctions.createBanque)
@@ -33,6 +34,7 @@ const routes = (router = Router) => {
     router.get('/banque/:id', bankFonctions.viewBanque)
     router.put('/banque/:id/update', bankFonctions.updateBanque)
     router.delete('/banque/:id/delete', bankFonctions.deleteBanque)
+    router.post('/banque/search', bankFonctions.searchBanque)
 
     //PRETS    
     router.post('/pret/create', pretFonctions.createPret)
@@ -41,6 +43,7 @@ const routes = (router = Router) => {
     router.put('/pret/:id/update', pretFonctions.updatePret)
     router.delete('/pret/:id/delete', pretFonctions.deletePret)
     router.put('/pret/:id/versement', pretFonctions.versement)
+    router.post('/pret/search', pretFonctions.searchPret)
 
     //CLIENT //BANQUE //PRET
     router.get('/client/:id/pretClient', clientFonctions.getClientPret)

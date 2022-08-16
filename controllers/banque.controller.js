@@ -1,4 +1,5 @@
 const Banque = require('../models/banque.model')
+const mongoose = require('mongoose')
 
 const createBanque = async (req, res) => {
     const body = req.body
@@ -88,7 +89,7 @@ const getBanquePret = async (req, res) => {
         }
         return res.send({
             error,
-            message: "No client yet"
+            message: "No bank yet"
         })
     } catch (error) {
         res.send({
@@ -98,7 +99,28 @@ const getBanquePret = async (req, res) => {
     }
 }
 
+const searchBanque = async (req, res) => {
+    const keyword = req.body.keyword
+  const banques = await Banque.find().or([
+      { designation:  {$regex: keyword, $options: 'i'} },
+      { numBanque: {$regex: keyword, $options: 'i'} }
+    ])  
+
+  if((banques.length != 0)){ return res.send(banques)}
+  try {
+    const newkey = mongoose.Types.ObjectId(keyword.trim())
+    const banquesById = await Banque.findById(newkey)
+    if(banquesById.length != 0){ return res.send(banquesById)}
+      res.send({message: "no bank found"})
+  } catch (error) {
+    return  res.send({message: "no bank found"})
+  }
+
+  res.send({message: "no bank found"})
+}
+
 module.exports = {
+    searchBanque: searchBanque,
     createBanque: createBanque,
     getBanques: getBanques,
     viewBanque: viewBanque,

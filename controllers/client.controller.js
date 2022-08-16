@@ -1,4 +1,5 @@
 const Client = require('../models/clients.model')
+const mongoose = require('mongoose')
 
 const createClient = async (req, res) => {
     const body = req.body
@@ -116,13 +117,35 @@ const getClientPret = async (req, res) => {
     }
 }
 
+const searchClient = async (req, res) => {
+    const keyword = req.body.keyword
+  const clients = await Client.find().or([
+      { nom:  {$regex: keyword, $options: 'i'} },
+      { numClient: {$regex: keyword, $options: 'i'} },
+      { email: {$regex: keyword, $options: 'i'} }
+    ])  
+
+  if((clients.length != 0)){ return res.send(clients)}
+  try {
+    const newkey = mongoose.Types.ObjectId(keyword.trim())
+    const clientById = await Client.findById(newkey)
+    if(clientById.length != 0){ return res.send(clientById)}
+      res.send({message: "no client found"})
+  } catch (error) {
+    return  res.send({message: "no client found"})
+  }
+
+  res.send({message: "no client found"})
+}
+
 const clientFonctions = {
     createClient: createClient,
     getClient: getClient,
     viewClient: viewClient,
     updateClient: updateClient,
     deleteClient: deleteClient,
-    getClientPret: getClientPret
+    getClientPret: getClientPret,
+    searchClient:searchClient
 }
 
 module.exports = clientFonctions
