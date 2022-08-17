@@ -150,26 +150,64 @@ const deletePret = async (req, res) => {
     }
 }
 
-const getZavatra = async(req,res)=>{
-    const test = req.body.test;
-    const date = new Date(test);
+const pretEntreDate = async(req,res)=>{
+    const minDatePrep = req.body.minDate;
+    const maxDatePrep = req.body.maxDate;
+    const date = new Date(minDatePrep);
+    const dateEnd = new Date(maxDatePrep);
     const dateCopy = new Date(date.getTime());
 
     dateCopy.setDate(dateCopy.getDate() + 7);
 
-// 👇️ Thu Apr 28 2022
-console.log(dateCopy);
-
-// 👇️ Thu Apr 21 2022 (didn't change original)
-console.log(date);
+// console.log(dateCopy);
+// console.log(date);
 
     const minDate = new Date(date)
-    const maxDate = new Date(dateCopy)
+    const maxDate = new Date(dateEnd)
+
+    const pretsFound = await Pret.find({"datePret": {"$gte": minDate, "$lt": maxDate}}).populate("Client").populate("Banque")
+
+    return res.send(pretsFound)
 
     // const pret = await Pret.find({
     //     "datePret": { "$gte" : minDate, "$lt" : maxDate }
     // })
     // console.log(" Pret" + pret + " date " + date)
+}
+
+const getPretByYM = async (req,res) => {
+
+    const minDatePrep = req.body.minDate;
+    const date = new Date(minDatePrep);
+
+    const data = await Pret.aggregate([{
+        $group: {
+            datePret : { year: { $year : date }, month: { $month : date }},
+            results: {$push: '$$ROOT'}
+        }}])
+
+        res.send(data)
+}
+
+//Grouper par banque et montrer somme des prets
+const groupAndSum = async (req,res) => {
+    const data = await Pret.aggregate([
+        {$group : {_id:"$Banque", count:{$sum:"$montant"}}}
+    ])
+    // await Banque.populate(data._id, {path: "Banque"});
+    let dataArray = []
+    for(let i = 0; i < data.length; i++){
+        const banque = await Banque.findById(data[i]._id)
+        if(banque){
+            let item = {
+                banque: banque,
+                montant: data[i].count
+            }
+            console.log(item)
+            dataArray.push(item)
+        }        
+    }
+    return res.send(dataArray)
 }
 
 const versement = async (req,res) => {
@@ -210,8 +248,10 @@ module.exports = {
     viewPret: viewPret,
     updatePret: updatePret,
     deletePret: deletePret,
-    getZavatra:getZavatra,
+    pretEntreDate: pretEntreDate,
     versement: versement,
-    searchPret: searchPret
+    searchPret: searchPret,
+    getPretByYM: getPretByYM,
+    groupAndSum: groupAndSum
 }
 

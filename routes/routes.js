@@ -49,7 +49,10 @@ const routes = (router = Router) => {
     router.get('/client/:id/pretClient', clientFonctions.getClientPret)
     router.get('/banque/:id/pretBanque', bankFonctions.getBanquePret);
 
-    router.post('/pret/getZavatra',pretFonctions.getZavatra)
+    router.post('/pret/pretEntreDate', pretFonctions.pretEntreDate)
+    router.post('/pret/pretMD', pretFonctions.getPretByYM)
+    router.post('/pret/groupAndSum', pretFonctions.groupAndSum);
+
 
 
 
