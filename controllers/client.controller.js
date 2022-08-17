@@ -1,5 +1,7 @@
 const Client = require('../models/clients.model')
 const mongoose = require('mongoose')
+const Banque = require('../models/banque.model')
+const Pret = require('../models/pret.model')
 
 const createClient = async (req, res) => {
     const body = req.body
@@ -84,9 +86,78 @@ const updateClient = async (req, res) => {
     }
 }
 
+// const deleteClient = async (req, res) => {
+//     const id = req.params.id
+//     try {
+//         await Client.findByIdAndDelete(id)
+//         const updatedClient = await Client.findById(id)
+//         res.status(200).send(updatedClient)
+//     } catch (error) {
+//         res.send({
+//             error,
+//             message: "Error/"
+//         })
+//     }
+// }
+
 const deleteClient = async (req, res) => {
     const id = req.params.id
     try {
+        const oldClient = await Client.findById(id) 
+         console.log("01 : => " + oldClient)
+
+        const prets = oldClient.pret 
+
+         console.log("02 : => " + prets)
+        console.log("03 pret;lenght" + prets.length)
+
+        if(prets.length != 0){   
+            for (let i = 0; i < prets.length; i++){
+                console.log("prets[i] " + prets[i])
+
+                
+                try {
+                    const pretElement = await Pret.findById(prets[i])  
+
+                    console.log("pretElement :4:" + pretElement)
+                    if(pretElement){
+                        const bank = await Banque.findById(pretElement.Banque)  
+                        console.log("client ::5::" + bank + "::5::")
+                        let bankPret = bank.pret
+                        for (let j=0; j < bankPret.length; j++){
+                            let pretID = prets[i].toString()
+
+                            console.log("pretID  ::7::" +pretID+ " ::7::")
+
+                            let bankPretJ = bankPret[j].toString()   
+                            
+                            console.log("pretID  ::7::" +pretID+ " ::7::"+"pretID  ::8::" +bankPretJ+ " ::8::")
+
+                            if(bankPretJ == pretID){
+                                console.log("ClientPret[j]  ::6::" +clientPret[j]+ " ::6::")
+                                bankPret.splice(j, 1)
+                            } else {
+                                console.log("pretID  ::9::" +pretID+ " ::9::"+"pretID  ::9::" +bankPretJ+ " ::9::")
+                            }
+                        }
+                        await bank.updateOne({
+                            pret: bankPret
+                        })
+
+                        console.log('removed pret from client successfully!')
+                    }
+                    
+
+                        //removing pret
+                    await Pret.findByIdAndDelete(prets[i])
+    
+                    } catch (error) {
+                        console.log("keep going on i = "+i + "err" +error)
+                    }
+
+            }
+        }
+
         await Client.findByIdAndDelete(id)
         const updatedClient = await Client.findById(id)
         res.status(200).send(updatedClient)
