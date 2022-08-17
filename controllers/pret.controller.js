@@ -175,6 +175,33 @@ const pretEntreDate = async(req,res)=>{
     // console.log(" Pret" + pret + " date " + date)
 }
 
+
+const getPretByMonth = async(req,res)=>{
+    const minDatePrep = req.body.minDate;
+    const maxDatePrep = req.body.maxDate;
+    const date = new Date(minDatePrep);
+    const dateEnd = new Date(maxDatePrep);
+    const dateCopy = new Date(date.getTime());
+
+    dateCopy.setDate(dateCopy.getDate() + 7);
+
+// console.log(dateCopy);
+// console.log(date);
+
+    const minDate = new Date(date)
+    const maxDate = new Date(dateEnd)
+
+    const pretsFound = await Pret.find({"datePret": {"$gte": minDate, "$lt": maxDate}}).populate("Client").populate("Banque")
+
+    return res.send(pretsFound)
+
+    // const pret = await Pret.find({
+    //     "datePret": { "$gte" : minDate, "$lt" : maxDate }
+    // })
+    // console.log(" Pret" + pret + " date " + date)
+}
+
+
 const getPretByYM = async (req,res) => {
 
     const minDatePrep = req.body.minDate;
@@ -194,16 +221,21 @@ const groupAndSum = async (req,res) => {
     const data = await Pret.aggregate([
         {$group : {_id:"$Banque", count:{$sum:"$montant"}}}
     ])
-    // await Banque.populate(data._id, {path: "Banque"});
+
+    //populating the agragation manualy
     let dataArray = []
     for(let i = 0; i < data.length; i++){
         const banque = await Banque.findById(data[i]._id)
         if(banque){
+            const effectif = banque.pret.length
+            const montantPTG = (banque.taux_pret * data[i].count)/100 + (data[i].count)
             let item = {
-                banque: banque,
-                montant: data[i].count
+                Id: banque._id,
+                banque: banque.designation,
+                montant: data[i].count,
+                effectif: effectif,
+                montantPTG: montantPTG
             }
-            console.log(item)
             dataArray.push(item)
         }        
     }
