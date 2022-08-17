@@ -3,40 +3,40 @@ import { NavBar } from './navigation'
 import { useState,useEffect } from 'react'
 import axios from "axios";
 import {useParams } from 'react-router-dom';
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const UpdatePret = () => {
     const id=useParams();
     const [data,setData]=useState({
-        nom:"",
-        adresse:"",
-        numClient: "",
-        telClient: "",
-        email:""
+      montant:"",
+      datePret:"",
+      nom:"",
+      designation:"",
     });
     const [error, setError] = useState("");
-	
+    const [startDate, setStartDate] = useState(new Date());
+
 	const handleChange = ({ currentTarget: input }) => {
 		setData({ ...data, [input.name]: input.value });
 	};
 
     useEffect(()=>{
-        getClientById();
+        getPretById();
       },[]);
 
-    const getClientById = async () =>{
-        const url = "http://localhost:6969/client/"+id.id;
+    const getPretById = async () =>{
+        const url = "http://localhost:6969/pret/"+id.id;
         try {
           await axios.get(`${url}`)
         .then((response)=>{
-          const allUsers = response.data
+          const allPrets = response.data
           console.log(response.data)
           setData({
-            nom: allUsers.nom,
-            adresse: allUsers.adresse,
-            numClient: allUsers.numClient,
-            telClient: allUsers.telClient,
-            email: allUsers.email,
+            montant: allPrets.montant,
+            datePret: allPrets.datePret,
+            nom: allPrets.Client.nom,            telClient: allPrets.telClient,
+            designation: allPrets.Banque.designation,
           })
         })
        } catch (err) {
@@ -47,10 +47,10 @@ const UpdatePret = () => {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
-			const url = "http://localhost:6969/client/"+id.id+"/update";
-			const { data: res } = await axios.put(url, data);
+			const url = "http://localhost:6969/pret/"+id.id+"/update";
+			const { data: res } = await axios.put(url, {datePret : data.datePret,montant:data.montant});
 			console.log(res.message);
-            window.location = "/Client";
+            window.location = "/Pret";
 		} catch (error) {
 			if (
 				error.response &&
@@ -69,8 +69,30 @@ const UpdatePret = () => {
           marginLeft:'100px',
           fontWeight:'700',
           fontSize:'15px'
-        }}>MODIFIER UN CLIENT</p>
+        }}>MODIFIER UN PRÊT</p>
+        <div style={{
+            marginLeft:'100px',
+            height:'80px',
+            width:'20%',
+            fontWeight:'400',
+            fontSize:'14px',
+            paddingTop:'9px',
+            display:'flex',
+            flexDirection:'column',
+            backgroundColor:'rgb(245,245,245)',
+            paddingLeft:'20px',
+            borderRadius:'10px',
+            marginBottom:'30px'
+            }}>
+
+            <p> Client : <b>  {data.nom}</b></p> 
+            <p> Banque : <b>  {data.designation}</b></p> 
+        </div>
       {error && <div className="alert alert-danger">{error}</div>}
+      <div style={{width:'20%',marginLeft:'100px',display:'flex', height:'100%', justifyContent:'center',}}>
+          <p style={{alignSelf:'center',marginRight:'5px'}}><b>D:</b></p>
+          <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+        </div>
       <form onSubmit={handleSubmit}
        style={{
         width:'30%',
@@ -79,24 +101,8 @@ const UpdatePret = () => {
 
       }}>
         <div class="mb-3">
-            <label for="numClient" class="form-label">Numéro client</label>
-            <input type="text" class="form-control" id="numClient" name="numClient" value={data.numClient}  onChange={handleChange} required/>
-        </div>
-        <div class="mb-3">
-            <label for="nom" class="form-label">Nom</label>
-            <input type="nom" class="form-control" id="nom" name="nom"  value={data.nom} onChange={handleChange} required/>
-        </div>
-        <div class="mb-3">
-            <label for="adresse" class="form-label">Adresse</label>
-            <input type="text" class="form-control" id="adresse" name="adresse" value={data.adresse}  onChange={handleChange}  required/>
-        </div> 
-        <div class="mb-3">
-            <label for="telClient" class="form-label">Téléphone</label>
-            <input type="text" class="form-control" id="telClient" name="telClient"  value={data.telClient} onChange={handleChange} required/>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">E-mail</label>
-            <input type="email" class="form-control" id="email" name="email" value={data.email} onChange={handleChange} required/>
+            <label for="montant" class="form-label">Montant</label>
+            <input type="number" class="form-control" id="montant" name="montant" value={data.montant} onChange={handleChange} required/>
         </div>
 
         <button type="submit" class="btn btn-primary">Modifier</button>

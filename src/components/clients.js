@@ -6,15 +6,28 @@ import { Link } from 'react-router-dom'
 import { MdEdit, MdDelete } from "react-icons/md";
 import Button from 'react-bootstrap/Button';
 import { BsSearch } from "react-icons/bs";
+import { GiReceiveMoney } from "react-icons/gi";
+import ActivityIndicator from 'react-activity-indicator'
+
 
 const Clients = () => {
+    const [loading,setLoading]=useState(true);
     const [clients, setClients] = useState({ users: []})
     const [show,setShow] = useState(false);
+    const [data, setData] = useState({ keyword: "" });
+
+
+    const handleChange = ({ currentTarget: input }) => {
+      setData({ ...data, [input.name]: input.value });
+    };
+
+    
 
     const fetchClients = async ()=> {
       try{
         const {data} = await axios.get("http://localhost:6969/client/list")
         setClients({users: data})
+        setLoading(false)
         console.log(data)
       }
       catch (error) {
@@ -41,6 +54,51 @@ const Clients = () => {
       }
     }
 
+    const searchClients = async (e) => {
+      e.preventDefault();
+      try {
+        if(data.keyword!=""){
+          const url = "http://localhost:6969/client/search";
+          const { data: res } = await axios.post(url, data);
+
+          if(res.length>0){
+            setClients({users:res})
+          }
+          else{
+            setClients("")
+          }       
+        }
+        else{
+          fetchClients();
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    };
+
+    if(loading){
+      return(
+        <div style={{
+          width:'100%',
+          height:'80vh',
+          display:'flex',
+          justifyContent:'center',
+          alignItems:'center'}}>
+          <ActivityIndicator
+            number={5}
+            diameter={20}
+            borderWidth={1}
+            duration={300}
+            activeColor="#183153"
+            borderColor="#183153"
+            borderRadius="50px" 
+            boxShadow="0 0 2px #183153"/>
+        </div>
+  
+      )
+    }
+
+
   return (
     <div>
         <NavBar></NavBar>
@@ -57,8 +115,13 @@ const Clients = () => {
             LISTE DES CLIENTS
           </div>
            
-         <form className="d-flex">
+         <form className="d-flex" onSubmit={searchClients}>
             <input
+              name="keyword"
+              id="keyword"
+              value={data.keyword}
+              onChange={handleChange}
+              autoComplete="off"
               style={{
                 borderRadius:'5px',
                 boxShadow:'0 0 2px #183153',
@@ -71,7 +134,7 @@ const Clients = () => {
               className="me-2"
 
             />
-            <Button variant="outline-success">
+            <Button type="submit" variant="outline-success">
               <BsSearch size={20}></BsSearch>
             </Button>
           </form>
@@ -99,7 +162,30 @@ const Clients = () => {
                 <td>{client.adresse}</td>
                 <td>{client.email}</td>
                 <td>{client.telClient}</td>
+                <td>
+                    <button style={{
+                      outline:"none",
+                      width:'30px',
+                      height:'30px',
+                      border:'none',
+                      backgroundColor:'rgba(0,91,128,0.1)',
+                      borderRadius:'5px',
+                      
+                    }}>
+                    <div style={{
+                        display:'flex',
+                        justifyContent:'center',
+                        alignItems:'center',
+                        width:'100%',
+                        height:'100%',
 
+                      }}>
+                        <Link  to={{pathname: `/AddPret/${client._id}`}} >
+                            <GiReceiveMoney title="Faire un prêt" color="#183153" size={20}></GiReceiveMoney>
+                        </Link>
+                      </div>
+                    </button>
+                </td>
                 <td>
                     <button style={{
                       outline:"none",

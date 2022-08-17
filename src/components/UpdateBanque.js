@@ -3,9 +3,11 @@ import { NavBar } from './navigation'
 import { useState,useEffect } from 'react'
 import axios from "axios";
 import {useParams } from 'react-router-dom';
+import ActivityIndicator from 'react-activity-indicator'
 
 
 const UpdateBanque = () => {
+    const [loading,setLoading]=useState(true);
     const id=useParams();
     const [data,setData]=useState({
         designation:"",
@@ -23,6 +25,7 @@ const UpdateBanque = () => {
       },[]);
 
     const getBanqueById = async () =>{
+        setLoading(true)
         const url = "http://localhost:6969/banque/"+id.id;
         try {
           await axios.get(`${url}`)
@@ -34,6 +37,7 @@ const UpdateBanque = () => {
             taux_pret:allUsers.taux_pret,
             numBanque:allUsers.numBanque
           })
+          setLoading(false)
         })
        } catch (err) {
         console.error(`error:${err}`);
@@ -57,6 +61,28 @@ const UpdateBanque = () => {
 			}
 		}
 	  };
+
+    if(loading){
+      return(
+        <div style={{
+          width:'100%',
+          height:'80vh',
+          display:'flex',
+          justifyContent:'center',
+          alignItems:'center'}}>
+          <ActivityIndicator
+            number={5}
+            diameter={20}
+            borderWidth={1}
+            duration={300}
+            activeColor="#183153"
+            borderColor="#183153"
+            borderRadius="50px" 
+            boxShadow="0 0 2px #183153"/>
+        </div>
+  
+      )
+    }
 
   return (
     <div>

@@ -52,13 +52,11 @@ export const NavBar = ()=>{
               <NavDropdown.Item  >
                 <Nav.Link as={Link} to={"/AddClient"}>AJOUTER CLIENT</Nav.Link>
               </NavDropdown.Item>
+              <NavDropdown.Divider />
               <NavDropdown.Item href="#action4">
                 <Nav.Link as={Link} to={"/AddBanque"}>AJOUTER BANQUE</Nav.Link>
               </NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action5">
-                <Nav.Link as={Link} to={"/AddPret"}>ENREGISTRER PRÊT</Nav.Link>
-              </NavDropdown.Item>
+
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>

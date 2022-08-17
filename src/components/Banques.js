@@ -6,22 +6,62 @@ import { Link } from 'react-router-dom'
 import { MdEdit, MdDelete } from "react-icons/md";
 import Button from 'react-bootstrap/Button';
 import { BsSearch,BsThreeDotsVertical } from "react-icons/bs";
+import ActivityIndicator from 'react-activity-indicator'
 
 const Banques = () => {
     const [banques, setBanques] = useState({ banks: []})
+    const [b, setB] = useState({ banque: []})
     const [show,setShow] = useState(false)
-    
+    const [data, setData] = useState({ keyword: "" });
+    const [loading,setLoading]=useState(true);
+
+    const handleChange = ({ currentTarget: input }) => {
+      setData({ ...data, [input.name]: input.value });
+    };
+
     const fetchBanques = async ()=> {
+      setLoading(true)
       try{
-        const {data} = await axios.get("http://localhost:6969/banque/list")
+      
+        const {data} = await axios.post("http://localhost:6969/pret/groupAndSum")
         setBanques({banks: data})
+
+        await axios.get("http://localhost:6969/banque/list")
+        .then((response)=>{
+          const allb = response.data
+          console.log("BANQUE REHETRA")
+          console.log(response.data)
+          setB({banque: response.data})
+          console.log(b.banque)
+
+        })
+                   
+        setLoading(false)
+      }
+      catch (error) {
+        console.log(error)
+      }  
+    }
+
+    const allBanques = async ()=>{
+      setLoading(true)
+      try{
+        await axios.get("http://localhost:6969/banque/list")
+        .then((response)=>{
+          const allb = response.data
+          console.log("BANQUE REHETRA")
+          console.log(response.data)
+          setB({banque: response.data})
+          console.log(b.banque)
+
+        })
+        setLoading(false)
         console.log(data)
       }
       catch (error) {
         console.log(error)
-      }
-      
-  }
+      }  
+    }
 
     useEffect(()=> { 
         fetchBanques()
@@ -45,6 +85,54 @@ const Banques = () => {
         console.log(error)
       }
     }
+
+    const searchBanque = async (e) => {
+      e.preventDefault();
+
+      try {
+        if(data.keyword!=""){
+          const url = "http://localhost:6969/banque/search";
+          const { data: res } = await axios.post(url, data);
+
+          if(res.length>0){
+            setB({banque:res})
+          }
+          else{
+            setB("")
+          }       
+        }
+        else{
+        allBanques();
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    };
+
+
+    if(loading){
+      return(
+        <div style={{
+          width:'100%',
+          height:'80vh',
+          display:'flex',
+          justifyContent:'center',
+          alignItems:'center'}}>
+          <ActivityIndicator
+            number={5}
+            diameter={20}
+            borderWidth={1}
+            duration={100}
+            activeColor="#183153"
+            borderColor="#183153"
+            borderRadius="50px" 
+            boxShadow="0 0 2px #183153"/>
+        </div>
+  
+      )
+    }
+
+    
   return (
     <div>
        
@@ -62,8 +150,13 @@ const Banques = () => {
             LISTE DES BANQUES
           </div>
            
-         <form className="d-flex">
+         <form className="d-flex" onSubmit={searchBanque}>
             <input
+              name="keyword"
+              id="keyword"
+              value={data.keyword}
+              onChange={handleChange}
+              autoComplete="off"
               style={{
                 borderRadius:'5px',
                 boxShadow:'0 0 2px #183153',
@@ -76,7 +169,7 @@ const Banques = () => {
               className="me-2"
 
             />
-            <Button variant="outline-success">
+            <Button type="submit" variant="outline-success">
               <BsSearch size={20}></BsSearch>
             </Button>
           </form>
@@ -85,9 +178,9 @@ const Banques = () => {
       <thead>
         <tr>
           <th></th>
-          <th>Numéro de banque</th>
-          <th>Désignation</th>
-          <th>Taux d'interet</th>
+            <th>N° Banque</th>
+            <th>Désignation</th>
+            <th>Taux (%)</th>
           <th></th>
 
 
@@ -95,7 +188,7 @@ const Banques = () => {
       </thead>
       <tbody>
         {
-            banques.banks && banques.banks.map((bank,index) => (
+            b.banque && b.banque.map((bank,index) => (
                 <tr key={bank._id}>
                 <td>{index}</td>
                 <td>{bank.numBanque}</td>
@@ -191,7 +284,7 @@ const Banques = () => {
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
                           <button type="button" class="btn btn-primary" data-bs-dismiss={show ? 'modal': null} onClick={(e)=>{
                               
-                              deleteBanque(bank._id);
+                              deleteBanque(bank.banque._id);
                           }}>Oui</button>
                         </div>
                       </div>
@@ -201,7 +294,67 @@ const Banques = () => {
             ))
         }        
       </tbody>
-    </ReactBootstrap.Table>
+        </ReactBootstrap.Table>
+        <br></br>
+        <div style={{height:'100%',textAlign:'center',fontWeight:'700',fontSize:'15px',paddingTop:'9px'}}>
+            LISTE DES BANQUES AVEC PRÊTS
+          </div>
+        <ReactBootstrap.Table striped bordered hover>
+      <thead>
+        <tr>
+          <th></th>
+          <th>N° Banque</th>
+          <th>Désignation</th>
+          <th>Taux (%)</th>
+          <th>Effectif</th>
+          <th>Total prêt</th>
+          <th>Total à payer</th>
+          <th></th>
+
+
+        </tr>
+      </thead>
+      <tbody>
+        {
+            banques.banks && banques.banks.map((bank,index) => (
+                <tr key={bank.banque._id}>
+                <td>{index}</td>
+                <td>{bank.banque.numBanque}</td>
+                <td>{bank.banque.designation}</td>
+                <td>{bank.banque.taux_pret + "%"}</td>
+                <td>{bank.effectif}</td>
+                <td>{bank.montant}</td>
+                <td>{bank.montantPTG}</td>
+                <td>
+                <button title='Détails' style={{
+                      outline:"none",
+                      width:'30px',
+                      height:'30px',
+                      border:'none',
+                      backgroundColor:'rgba(0,91,128,0.1)',
+                      borderRadius:'5px',
+                      
+                    }}>
+                    <div style={{
+                        display:'flex',
+                        justifyContent:'center',
+                        alignItems:'center',
+                        width:'100%',
+                        height:'100%',
+
+                      }}>
+                        <Link  to={{pathname: `/Banque/Detail/${bank.banque._id}`}} >
+                            <BsThreeDotsVertical color="black" size={20}></BsThreeDotsVertical>
+                        </Link>
+                      </div>
+                </button>
+                 
+                </td>
+                </tr>
+            ))
+        }        
+      </tbody>
+        </ReactBootstrap.Table>
     </div>
   )
 }

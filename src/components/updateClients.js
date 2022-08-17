@@ -3,9 +3,11 @@ import { NavBar } from './navigation'
 import { useState,useEffect } from 'react'
 import axios from "axios";
 import {useParams } from 'react-router-dom';
+import ActivityIndicator from 'react-activity-indicator'
 
 
 const UpdateClient = () => {
+    const [loading,setLoading]=useState(true);
     const id=useParams();
     const [data,setData]=useState({
         nom:"",
@@ -21,6 +23,7 @@ const UpdateClient = () => {
 	};
 
   const getClientById = async () =>{
+    setLoading(true)
     const url = "http://localhost:6969/client/"+id.id;
     try {
       await axios.get(`${url}`)
@@ -34,6 +37,7 @@ const UpdateClient = () => {
         telClient: allUsers.telClient,
         email: allUsers.email,
       })
+      setLoading(false)
     })
    } catch (err) {
     console.error(`error:${err}`);
@@ -44,6 +48,27 @@ const UpdateClient = () => {
         getClientById();
       },[]);
 
+      if(loading){
+        return(
+          <div style={{
+            width:'100%',
+            height:'80vh',
+            display:'flex',
+            justifyContent:'center',
+            alignItems:'center'}}>
+            <ActivityIndicator
+              number={5}
+              diameter={20}
+              borderWidth={1}
+              duration={300}
+              activeColor="#183153"
+              borderColor="#183153"
+              borderRadius="50px" 
+              boxShadow="0 0 2px #183153"/>
+          </div>
+    
+        )
+      }
  
 
 	const handleSubmit = async (e) => {

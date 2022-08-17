@@ -35,7 +35,7 @@ function App() {
 
         {/* Pret */}
         <Route path="/Pret" element={<Prets/>}></Route>
-        <Route path="/AddPret" element={<AddPret/>}></Route>
+        <Route path="/AddPret/:id" element={<AddPret/>}></Route>
         <Route path="/Pret/update/:id" element={<UpdatePret/>}/>
 
       </Routes>
