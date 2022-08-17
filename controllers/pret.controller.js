@@ -230,8 +230,7 @@ const groupAndSum = async (req,res) => {
             const effectif = banque.pret.length
             const montantPTG = (banque.taux_pret * data[i].count)/100 + (data[i].count)
             let item = {
-                Id: banque._id,
-                banque: banque.designation,
+                banque: banque,
                 montant: data[i].count,
                 effectif: effectif,
                 montantPTG: montantPTG
